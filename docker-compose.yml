@@ -1,0 +1,13 @@
+﻿version: "3.9"
+
+services:
+  eda-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gasto_social_eda
+    ports:
+      - "8050:8050"
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
