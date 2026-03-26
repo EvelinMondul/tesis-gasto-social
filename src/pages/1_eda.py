@@ -146,6 +146,44 @@ def make_scatter_pob_gasto():
     return fig
 
 
+
+
+def make_cv_barplot():
+    """Barplot del coeficiente de variación por sector per cápita."""
+    available = [c for c in PC_DISPONIBLES if c != "total_pc"]
+    cvs   = [(SECTOR_LABELS.get(c, c), df[c].std() / df[c].mean() * 100) for c in available if c in df.columns]
+    cvs   = sorted(cvs, key=lambda x: x[1], reverse=True)
+    labels, values = zip(*cvs)
+
+    colors_bar = ["#F78166" if v > 60 else "#D29922" if v > 40 else "#58A6FF" for v in values]
+
+    fig = go.Figure(go.Bar(
+        x=list(labels), y=list(values),
+        marker_color=colors_bar,
+        marker_line=dict(color=BG, width=0.5),
+        text=[f"{v:.1f}%" for v in values],
+        textposition="outside",
+        textfont=dict(family="IBM Plex Mono", size=10, color=TEXT1),
+    ))
+    fig.add_hline(y=33, line_dash="dash", line_color=GREEN,
+                  annotation_text="CV = 33% (referencia baja)",
+                  annotation_font_color=GREEN, annotation_font_size=10)
+    fig.add_hline(y=60, line_dash="dash", line_color=RED,
+                  annotation_text="CV = 60% (referencia alta)",
+                  annotation_font_color=RED, annotation_font_size=10)
+    fig.update_layout(
+        paper_bgcolor=CARD, plot_bgcolor=CARD,
+        font=dict(family="IBM Plex Mono", color=TEXT1, size=11),
+        title=dict(text="Coeficiente de Variación por Sector · Desigualdad territorial",
+                   font=dict(family="IBM Plex Sans", size=13, color=TEXT1)),
+        xaxis=dict(gridcolor=BORDER, linecolor=BORDER, tickangle=-20),
+        yaxis=dict(gridcolor=BORDER, linecolor=BORDER, title="CV (%)", range=[0, max(values)*1.2]),
+        margin=dict(l=50, r=20, t=60, b=80),
+        height=420,
+        showlegend=False,
+    )
+    return fig
+
 # ── LAYOUT ────────────────────────────────────────────────────────────────────
 layout = html.Div([
 
