@@ -35,9 +35,9 @@ BASE = dict(
     paper_bgcolor=CARD,
     plot_bgcolor=CARD,
     font=dict(family="IBM Plex Mono, monospace", color=TEXT1, size=11),
-    legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1,
-                font=dict(color=TEXT1)),
 )
+
+LEGEND = dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1, font=dict(color=TEXT1))
 
 DD_STYLE = {
     "background": SURFACE,
@@ -162,8 +162,7 @@ def fig_donut():
             font=dict(size=12, color=TEXT2, family="IBM Plex Mono"),
         )],
         height=400, margin=dict(l=20, r=20, t=60, b=20),
-        legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1,
-                    font=dict(color=TEXT1, size=10)),
+        legend=LEGEND,
     )
     return fig
 
@@ -694,8 +693,7 @@ def update_comp(sectors, regions):
         yaxis=dict(gridcolor=BORDER, linecolor=BORDER,
                    title="COP por habitante",
                    tickfont=dict(color=TEXT1), color=TEXT2),
-        legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1,
-                    font=dict(color=TEXT1)),
+        legend=LEGEND,
         margin=dict(l=80, r=20, t=70, b=120),
     )
     return dcc.Graph(figure=fig, config={"displayModeBar": False})
