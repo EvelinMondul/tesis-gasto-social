@@ -32,7 +32,6 @@ RED    = P["red"];    PURPLE  = P["purple"]
 PC_DISP  = [c for c in SECTORES_PC if c in df.columns]
 ABS_DISP = [c for c in SECTORES_ABS if c in df.columns]
 
-# Estilo base para figuras (sin keys conflictivos)
 BASE = dict(
     paper_bgcolor=CARD,
     plot_bgcolor=CARD,
@@ -40,7 +39,6 @@ BASE = dict(
     legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1),
 )
 
-# Estilo para dropdowns oscuros
 DD_STYLE = {
     "background": SURFACE,
     "color": TEXT1,
@@ -51,7 +49,7 @@ DD_STYLE = {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# HELPERS UI  — todos definidos ANTES del layout
+# HELPERS UI
 # ═══════════════════════════════════════════════════════════════════════════════
 def T(text, sub=""):
     return html.Div([
@@ -71,8 +69,9 @@ def T(text, sub=""):
 def narrative(text):
     return html.P(text, style={
         "color": TEXT2, "fontFamily": "IBM Plex Mono", "fontSize": "11px",
-        "lineHeight": "1.8", "marginBottom": "20px",
+        "lineHeight": "1.7", "marginBottom": "16px",
         "borderLeft": f"2px solid {BORDER}", "paddingLeft": "14px",
+        "maxWidth": "820px",
     })
 
 
@@ -104,22 +103,6 @@ def acto_header(num, titulo, descripcion):
     })
 
 
-def conclusion_item(icon, title, body, color):
-    return html.Div([
-        html.Div([
-            html.Span(icon + " ", style={"color": color, "fontSize": "13px",
-                                          "fontFamily": "IBM Plex Mono"}),
-            html.Span(title, style={"color": TEXT1, "fontFamily": "IBM Plex Sans",
-                                     "fontWeight": "600", "fontSize": "12px"}),
-        ], style={"marginBottom": "6px"}),
-        html.P(body, style={"color": TEXT2, "fontFamily": "IBM Plex Mono",
-                              "fontSize": "10px", "lineHeight": "1.6", "margin": "0"}),
-    ], style={
-        "background": CARD, "border": f"1px solid {BORDER}",
-        "borderLeft": f"3px solid {color}", "borderRadius": "6px", "padding": "14px 16px",
-    })
-
-
 def mini_kpi(label, value, unit, color):
     return html.Div([
         html.P(label, style={"color": TEXT2, "fontFamily": "IBM Plex Mono",
@@ -136,10 +119,9 @@ def mini_kpi(label, value, unit, color):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FIGURAS — ACTO 1: ESTADÍSTICOS DESCRIPTIVOS
+# FIGURAS — ACTO 1
 # ═══════════════════════════════════════════════════════════════════════════════
 def tabla_descriptivos():
-    """Tabla con estadísticos completos de variables PER CÁPITA."""
     rows = []
     for s in PC_DISP:
         v = df[s].dropna()
@@ -172,9 +154,7 @@ def tabla_descriptivos():
             {"if": {"column_id": "Variable"}, "textAlign": "left",
              "color": ACCENT, "fontWeight": "600", "minWidth": "140px"},
             {"if": {"column_id": "Missing"}, "color": RED},
-            {"if": {"column_id": "CV (%)"},
-             "color": RED,
-             "fontWeight": "600"},
+            {"if": {"column_id": "CV (%)"}, "color": RED, "fontWeight": "600"},
         ],
         style_header={
             "background": SURFACE, "color": ACCENT, "fontWeight": "600",
@@ -189,7 +169,7 @@ def tabla_descriptivos():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FIGURAS — ACTO 2: HETEROGENEIDAD TERRITORIAL
+# FIGURAS — ACTO 2
 # ═══════════════════════════════════════════════════════════════════════════════
 def fig_cv():
     cols  = [c for c in PC_DISP if c != "total_pc"]
@@ -292,7 +272,7 @@ def fig_scatter_poblacion():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FIGURAS — ACTO 3: DISTRIBUCIÓN UNIVARIADA (dinámica)
+# FIGURAS — ACTO 3
 # ═══════════════════════════════════════════════════════════════════════════════
 def fig_distribucion(sector):
     label = SECTOR_LABELS.get(sector, sector)
@@ -374,7 +354,7 @@ def fig_distribucion(sector):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FIGURAS — ACTO 4: CORRELACIÓN
+# FIGURAS — ACTO 4
 # ═══════════════════════════════════════════════════════════════════════════════
 def fig_correlacion():
     cols   = PC_DISP
@@ -438,7 +418,7 @@ def fig_scatter_matrix():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FIGURAS — ACTO 5: OUTLIERS
+# FIGURAS — ACTO 5
 # ═══════════════════════════════════════════════════════════════════════════════
 def fig_outliers():
     cols   = [c for c in PC_DISP if c != "total_pc"]
@@ -511,7 +491,7 @@ def tabla_mahalanobis(Z):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FIGURAS — ACTO 6: ESTANDARIZACIÓN
+# FIGURAS — ACTO 6
 # ═══════════════════════════════════════════════════════════════════════════════
 def fig_estandarizacion():
     cols = [c for c in PC_DISP if c != "total_pc"]
@@ -545,13 +525,12 @@ def fig_estandarizacion():
                      tickfont=dict(color=TEXT1))
     fig.update_yaxes(gridcolor=BORDER, linecolor=BORDER,
                      tickfont=dict(color=TEXT1))
-    # Subtítulos en color claro
     fig.update_annotations(font=dict(color=TEXT1, size=11))
     return fig
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# FIGURAS — ACTO 7: KMO, BARTLETT, SCREE
+# FIGURAS — ACTO 7
 # ═══════════════════════════════════════════════════════════════════════════════
 def calcular_kmo_bartlett():
     cols    = [c for c in PC_DISP if c != "total_pc"]
@@ -631,7 +610,7 @@ def fig_scree():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# PRE-COMPUTE — una sola vez al cargar
+# PRE-COMPUTE
 # ═══════════════════════════════════════════════════════════════════════════════
 _fig_cv          = fig_cv()
 _fig_barras      = fig_barras_departamentos()
@@ -655,44 +634,43 @@ _kmo_label, _kmo_color = _kmo_interp(_kmo)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# LAYOUT — NARRATIVA 7 ACTOS
+# LAYOUT
 # ═══════════════════════════════════════════════════════════════════════════════
 layout = html.Div([
 
     # ── PORTADA ───────────────────────────────────────────────────────────────
     html.Div([
-        html.Span("ANÁLISIS EXPLORATORIO DE DATOS · NARRATIVA ACADÉMICA", style={
+        html.Span("ANÁLISIS EXPLORATORIO DE DATOS · COLOMBIA 2024", style={
             "color": ACCENT, "fontSize": "9px", "letterSpacing": "0.2em",
             "fontFamily": "IBM Plex Mono", "fontWeight": "600",
         }),
         html.H1("Del gasto desigual a la estructura multivariada", style={
             "color": TEXT1, "fontFamily": "IBM Plex Sans", "fontWeight": "700",
-            "fontSize": "22px", "margin": "10px 0 12px", "lineHeight": "1.3",
+            "fontSize": "22px", "margin": "10px 0 6px", "lineHeight": "1.3",
         }),
         html.P(
-            "Narrativa analítica en 7 actos que conduce desde la descripción del fenómeno "
-            "hasta la justificación empírica del análisis multivariado (ACP · Factorial · Clúster). "
-            "Cada sección tiene un propósito estadístico explícito y conecta con las técnicas subsiguientes.",
+            "EDA en 7 actos · n = 33 departamentos · Fuente: TerriData–DNP · DANE · "
+            "Unidad: COP por habitante · Análisis previo a ACP, Factorial y Clúster.",
             style={"color": TEXT2, "fontFamily": "IBM Plex Mono", "fontSize": "11px",
-                   "lineHeight": "1.8", "maxWidth": "860px", "margin": "0"}
+                   "lineHeight": "1.6", "marginBottom": "16px"}
         ),
         html.Div([
             html.Div(f"KMO = {_kmo:.3f} · {_kmo_label}", style={
                 "color": _kmo_color, "fontFamily": "IBM Plex Mono", "fontSize": "10px",
                 "background": f"{_kmo_color}18", "border": f"1px solid {_kmo_color}",
-                "padding": "4px 14px", "borderRadius": "20px", "marginRight": "10px",
+                "padding": "4px 14px", "borderRadius": "20px",
             }),
-            html.Div(f"Bartlett p < 0.001", style={
+            html.Div("Bartlett p < 0.001", style={
                 "color": GREEN, "fontFamily": "IBM Plex Mono", "fontSize": "10px",
                 "background": f"{GREEN}18", "border": f"1px solid {GREEN}",
-                "padding": "4px 14px", "borderRadius": "20px", "marginRight": "10px",
+                "padding": "4px 14px", "borderRadius": "20px",
             }),
             html.Div(f"Kaiser: {_n_kaiser} CP · {_var_acum[_n_kaiser-1]:.1f}% varianza", style={
                 "color": ACCENT, "fontFamily": "IBM Plex Mono", "fontSize": "10px",
                 "background": f"{ACCENT}18", "border": f"1px solid {ACCENT}",
                 "padding": "4px 14px", "borderRadius": "20px",
             }),
-        ], style={"display": "flex", "marginTop": "16px", "flexWrap": "wrap", "gap": "8px"}),
+        ], style={"display": "flex", "flexWrap": "wrap", "gap": "8px"}),
     ], style={
         "background": SURFACE, "border": f"1px solid {BORDER}",
         "borderLeft": f"4px solid {ACCENT}", "borderRadius": "10px",
@@ -703,18 +681,13 @@ layout = html.Div([
     # ACTO 1 — DESCRIPCIÓN
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("01", "Descripción del Fenómeno",
-                "Estadísticos descriptivos de las 7 variables de gasto social per cápita · "
-                "Unidad: COP por habitante · Año 2024 · n = 33 departamentos"),
+                "Estadísticos descriptivos · 7 variables per cápita · COP/hab · n = 33 departamentos"),
     card_wrap(
         T("Tabla 1 · Estadísticos Descriptivos · Variables per cápita (COP/hab)",
-          "Media, mediana, cuartiles, DE, CV, asimetría y curtosis · "
-          "CV en rojo: alta heterogeneidad interdepartamental"),
+          "CV en rojo = alta dispersión interdepartamental · Ordenable por columna"),
         narrative(
-            "La Tabla 1 presenta los estadísticos descriptivos de las siete variables "
-            "de gasto social per cápita. La marcada diferencia entre media y mediana en "
-            "libre destinación e inversión anticipa distribuciones asimétricas. "
-            "El CV superior al 60% en tres sectores evidencia la heterogeneidad "
-            "territorial que motiva el análisis multivariado."
+            "CV > 60% en libre destinación e inversión: son los sectores con mayor heterogeneidad entre departamentos. "
+            "Media > mediana en todos los sectores confirma distribuciones asimétricas positivas."
         ),
         tabla_descriptivos(),
     ),
@@ -723,42 +696,31 @@ layout = html.Div([
     # ACTO 2 — HETEROGENEIDAD TERRITORIAL
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("02", "Heterogeneidad Territorial",
-                "¿Cuán desigual es el gasto entre departamentos? · "
-                "CV · Composición sectorial · Efecto escala poblacional"),
+                "¿Cuán desigual es el gasto entre departamentos? · CV · Composición sectorial · Efecto escala"),
     card_wrap(
         T("Gráfico 1 · Coeficiente de Variación por Sector",
-          "Mide la dispersión relativa del gasto entre departamentos · "
-          "Rojo > 60% · Naranja 40–60% · Azul < 40%"),
+          "Rojo > 60% · Naranja 40–60% · Azul < 40% · Umbrales de referencia en línea punteada"),
         narrative(
-            "Los sectores de libre destinación (CV = 75.6%) y libre inversión (CV = 62.9%) "
-            "presentan la mayor dispersión relativa, identificándolos como los principales ejes "
-            "de diferenciación fiscal territorial. En contraste, educación (CV = 25.9%) y agua "
-            "potable (CV = 44.1%) muestran menor variabilidad, consistente con el efecto "
-            "homogeneizador del SGP. Este patrón diferencial justifica técnicas multivariadas "
-            "que capturen simultáneamente estas dimensiones de variación."
+            "Sectores discrecionales (libre destinación, libre inversión) concentran la mayor heterogeneidad. "
+            "Educación muestra baja variabilidad por efecto homogeneizador del SGP."
         ),
         dcc.Graph(figure=_fig_cv, config={"displayModeBar": False}),
     ),
     card_wrap(
-        T("Gráfico 2 · Composición del Gasto per cápita por Departamento",
-          "Ordenado de menor a mayor gasto total · Permite identificar perfiles territoriales"),
+        T("Gráfico 2 · Composición del Gasto Social per cápita por Departamento",
+          "Ordenado de menor a mayor gasto total · Cada color = un sector"),
         narrative(
-            "La composición sectorial revela perfiles diferenciados: departamentos "
-            "con predominio del gasto en educación y salud (determinado por el SGP) "
-            "frente a aquellos con mayor participación de libre inversión. "
-            "Estos patrones latentes de asignación serán formalizados mediante ACP."
+            "Dos perfiles emergen: departamentos SGP-dependientes (educación + salud dominan) "
+            "vs. territorios con alta participación de libre inversión. Estos patrones serán formalizados en el clúster."
         ),
         dcc.Graph(figure=_fig_barras, config={"displayModeBar": False}),
     ),
     card_wrap(
         T("Gráfico 3 · Relación Población–Gasto per cápita",
-          "Eje X en escala logarítmica · Revela el efecto de densidad poblacional"),
+          "Eje X en escala logarítmica · Color = región geográfica"),
         narrative(
-            "Se evidencia una relación inversa entre tamaño poblacional y gasto per cápita. "
-            "Los departamentos amazónicos, con las menores poblaciones, presentan los mayores "
-            "niveles de inversión per cápita, reflejando el efecto matemático de dividir "
-            "un gasto absoluto entre una población muy reducida, más que una mayor capacidad fiscal. "
-            "Este fenómeno debe considerarse al interpretar los clusters."
+            "Relación inversa población–gasto per cápita. Los departamentos amazónicos son outliers matemáticos, "
+            "no fiscales: baja densidad poblacional infla el indicador sin reflejar mayor capacidad de inversión."
         ),
         dcc.Graph(figure=_fig_scatter_pob, config={"displayModeBar": False}),
     ),
@@ -767,11 +729,10 @@ layout = html.Div([
     # ACTO 3 — DISTRIBUCIÓN UNIVARIADA
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("03", "Distribución Univariada",
-                "Normalidad · Histograma + KDE · Q-Q plot · Boxplot regional · "
-                "Shapiro-Wilk · Decisión sobre transformaciones"),
+                "Histograma + KDE · Q-Q plot · Boxplot regional · Shapiro-Wilk · Selecciona una variable"),
     card_wrap(
         T("Explorador de Distribución por Variable",
-          "Selecciona una variable per cápita para ver su distribución completa"),
+          "Selecciona una variable per cápita · Los KPIs se actualizan automáticamente"),
         html.Div([
             html.Label("Variable per cápita:", style={
                 "color": TEXT2, "fontSize": "10px",
@@ -793,30 +754,19 @@ layout = html.Div([
     # ACTO 4 — ESTRUCTURA DE CORRELACIÓN
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("04", "Estructura de Correlación",
-                "Correlación de Spearman con significancia · Scatter matrix · "
-                "Identificación de variables redundantes y factores latentes"),
+                "Correlación de Spearman · Scatter matrix · Identificación de factores latentes"),
     card_wrap(
         T("Gráfico 4 · Matriz de Correlación de Spearman",
           "* p<.05  ** p<.01  *** p<.001 · No paramétrica · Robusta a distribuciones asimétricas"),
         narrative(
-            "Las correlaciones elevadas entre cultura y deporte (ρ ≈ 0.98***) sugieren "
-            "una lógica de asignación conjunta en estos sectores, indicando un factor "
-            "latente común. La correlación entre libre destinación e inversión (ρ ≈ 0.92***) "
-            "refleja la capacidad fiscal como dimensión subyacente. La presencia de "
-            "correlaciones sistemáticas significativas valida la aplicación de análisis "
-            "factorial, confirmada formalmente por KMO y Bartlett en el Acto VI."
+            "Cultura–Deporte (ρ ≈ 0.98***) y Libre destinación–Inversión (ρ ≈ 0.92***): "
+            "correlaciones altas indican factores latentes comunes. Factorización estadísticamente justificada."
         ),
         dcc.Graph(figure=_fig_corr, config={"displayModeBar": False}),
     ),
     card_wrap(
-        T("Gráfico 5 · Scatter Matrix · Relaciones Bivariadas",
+        T("Gráfico 5 · Scatter Matrix · Relaciones Bivariadas por Región",
           "Color = región geográfica · Cada celda = relación entre dos sectores"),
-        narrative(
-            "La matriz de dispersión evidencia asociaciones positivas generalizadas, "
-            "con mayor dispersión en sectores de libre asignación. La diferenciación "
-            "por región sugiere que parte de la variabilidad se estructura territorialmente, "
-            "anticipando la formación de clusters con base geográfica."
-        ),
         dcc.Graph(figure=_fig_scat_mat, config={"displayModeBar": False}),
     ),
 
@@ -824,38 +774,33 @@ layout = html.Div([
     # ACTO 5 — VALORES ATÍPICOS
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("05", "Detección de Valores Atípicos",
-                "Z-scores univariados · Distancia de Mahalanobis aproximada · "
-                "Identificación de casos influyentes para ACP y clustering"),
+                "Z-scores univariados · Distancia euclidiana multivariada · Casos influyentes para ACP"),
     card_wrap(
         T("Gráfico 6 · Z-scores por Variable · |Z| > 2.5 = atípico potencial",
           "Cada punto = un departamento · Línea roja = umbral ±2.5 DE"),
         narrative(
-            "La detección de outliers es crítica antes del ACP y clustering: un valor "
-            "atípico multivariado puede dominar un componente completo o conformar un "
-            "cluster artificial. La norma euclidiana del vector Z-score aproxima la "
-            "distancia de Mahalanobis e identifica los departamentos con perfil "
-            "multivariado más alejado del centro de la distribución conjunta."
+            "Vaupés, Guainía y Amazonas: outliers estructurales por baja densidad, no errores de medición. "
+            "Se realizará análisis de sensibilidad con y sin estos casos en ACP y clúster."
         ),
         dcc.Graph(figure=_fig_out, config={"displayModeBar": False}),
         html.Div([
             html.Div([
                 T("Top 10 · Mayor distancia multivariada",
-                  "Departamentos con perfil más alejado del promedio nacional"),
+                  "Norma euclidiana del vector Z-score · Aproximación a distancia de Mahalanobis"),
                 _tabla_mah,
             ], style={"flex": "1"}),
             html.Div([
-                T("¿Qué hacer con los outliers?", "Criterio sustantivo vs. estadístico"),
+                T("Criterio de decisión", "Sustantivo vs. estadístico"),
                 html.P(
-                    "Los departamentos con distancia alta no deben eliminarse automáticamente. "
-                    "Vaupés, Guainía y Amazonas son atípicos por su muy baja densidad "
-                    "poblacional — es una diferencia estructural real, no un error. "
-                    "Bogotá tiene libre_destinacion = 0 por régimen especial.",
+                    "Outliers con justificación estructural no se eliminan. "
+                    "Bogotá: libre_destinacion = 0 por régimen especial. "
+                    "Departamentos amazónicos: efecto matemático de baja densidad.",
                     style={"color": TEXT2, "fontFamily": "IBM Plex Mono",
                            "fontSize": "11px", "lineHeight": "1.7", "marginBottom": "12px"}
                 ),
                 html.P(
-                    "→  Realizar ACP y clustering con y sin casos extremos. "
-                    "Reportar ambos resultados como análisis de sensibilidad.",
+                    "→  ACP y clúster se ejecutarán con y sin casos extremos "
+                    "como análisis de sensibilidad.",
                     style={"color": ACCENT, "fontFamily": "IBM Plex Mono",
                            "fontSize": "11px", "lineHeight": "1.7",
                            "borderLeft": f"3px solid {ACCENT}", "paddingLeft": "10px"}
@@ -868,31 +813,19 @@ layout = html.Div([
     # ACTO 6 — ESTANDARIZACIÓN Y VALIDACIÓN
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("06", "Estandarización y Validación de Factorizabilidad",
-                "Z-score antes/después · KMO · Prueba de Bartlett · "
-                "Condiciones estadísticas para ACP y Análisis Factorial"),
+                "Z-score · KMO · Prueba de Bartlett · Condiciones necesarias para ACP y Análisis Factorial"),
     card_wrap(
         T("Gráfico 7 · Efecto de la Estandarización Z-score",
-          "Izquierda: escala original (COP/hab) · Derecha: Z-score · "
-          "La estandarización elimina el dominio de variables de mayor escala"),
+          "Izquierda: escala original · Derecha: Z-score · Elimina el dominio de variables de mayor escala"),
         narrative(
-            "El ACP opera sobre la estructura de covarianza. Cuando las variables tienen "
-            "escalas muy diferentes — educación (≈838.000 COP) supera en dos órdenes de "
-            "magnitud a deporte (≈7.400 COP) — la variable de mayor escala dominaría "
-            "artificialmente los primeros componentes. La estandarización Z-score garantiza "
-            "que todas las variables contribuyan equitativamente, haciendo que el ACP "
-            "opere sobre la matriz de correlaciones."
+            "Educación (≈838.000 COP/hab) supera en 2 órdenes de magnitud a Deporte (≈7.400). "
+            "Sin estandarizar, educación dominaría artificialmente el primer componente del ACP."
         ),
         dcc.Graph(figure=_fig_estand, config={"displayModeBar": False}),
     ),
     card_wrap(
         T("Validación de Factorizabilidad · KMO y Prueba de Bartlett",
-          "Condiciones necesarias para ACP y Análisis Factorial"),
-        narrative(
-            "El índice KMO evalúa si las correlaciones parciales son pequeñas "
-            "respecto a las totales — condición de factorizabilidad. "
-            "Bartlett contrasta H₀: la matriz de correlaciones es identidad. "
-            "Ambas pruebas deben reportarse obligatoriamente antes del AF."
-        ),
+          "Condiciones necesarias antes de aplicar ACP o Análisis Factorial"),
         html.Div([
             # KMO
             html.Div([
@@ -947,8 +880,7 @@ layout = html.Div([
                 }),
                 html.Hr(style={"borderColor": BORDER, "margin": "12px 0"}),
                 html.P(
-                    "✓  Se rechaza H₀  ·  La matriz de correlaciones NO es identidad  ·  "
-                    "Existen correlaciones sistemáticas  ·  Factorizabilidad confirmada"
+                    "✓  Se rechaza H₀  ·  R ≠ I  ·  Correlaciones sistemáticas confirmadas  ·  Factorizabilidad válida"
                     if _pval_bart < 0.05
                     else "✗  No se rechaza H₀  ·  Factorizabilidad cuestionable",
                     style={
@@ -979,24 +911,15 @@ layout = html.Div([
     # ACTO 7 — ESTRUCTURA PRELIMINAR
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("07", "Estructura Multivariada Preliminar",
-                f"Scree plot · Criterio de Kaiser (λ > 1) · "
-                f"{_n_kaiser} componente(s) con λ > 1 · "
-                f"{_var_acum[_n_kaiser-1]:.1f}% varianza acumulada · "
-                "Transición al ACP formal"),
+                f"Scree plot · Kaiser (λ > 1) · {_n_kaiser} CP retener · "
+                f"{_var_acum[_n_kaiser-1]:.1f}% varianza acumulada · Transición al ACP formal"),
     card_wrap(
         T("Gráfico 8 · Scree Plot · Varianza Explicada y Eigenvalores",
-          f"Verde: componentes con λ > 1 (Kaiser) · "
-          f"CP1 explica {_var_exp[0]:.1f}% de la varianza total"),
+          f"Verde: λ > 1 (Kaiser) · CP1 = {_var_exp[0]:.1f}% · Acumulado {_n_kaiser} CP = {_var_acum[_n_kaiser-1]:.1f}%"),
         narrative(
-            f"El ACP preliminar revela que {_n_kaiser} componente(s) presentan eigenvalor "
-            f"superior a 1 (criterio de Kaiser), acumulando el {_var_acum[_n_kaiser-1]:.1f}% "
-            f"de la varianza total. El primer componente explica el {_var_exp[0]:.1f}% de la "
-            f"varianza, actuando como un factor general de nivel de inversión social — "
-            f"consistente con las altas correlaciones positivas entre variables observadas en el "
-            f"Acto IV. La estructura casi unidimensional del gasto social departamental refleja "
-            f"que la mayor parte de la heterogeneidad territorial puede capturarse con un único "
-            f"componente, lo que guiará la decisión sobre el número de factores a retener "
-            f"en el análisis factorial."
+            f"CP1 explica {_var_exp[0]:.1f}% de la varianza: factor general de nivel de inversión social. "
+            f"Criterio Kaiser retiene {_n_kaiser} componente(s) con {_var_acum[_n_kaiser-1]:.1f}% acumulado. "
+            f"Estructura casi unidimensional coherente con las altas correlaciones del Acto IV."
         ),
         dcc.Graph(figure=_fig_scree, config={"displayModeBar": False}),
 
@@ -1038,28 +961,54 @@ layout = html.Div([
         html.H2("El EDA justifica empíricamente las técnicas multivariadas",
                 style={"color": TEXT1, "fontFamily": "IBM Plex Sans",
                        "fontWeight": "700", "fontSize": "15px",
-                       "margin": "10px 0 16px"}),
+                       "margin": "10px 0 20px"}),
         html.Div([
-            conclusion_item("✓", "Heterogeneidad territorial confirmada",
-                            "CV > 60% en libre destinación e inversión. "
-                            "Brecha máx/mín superior a 3x en todos los sectores.", GREEN),
-            conclusion_item("✓", "Correlaciones sistemáticas validadas",
-                            f"Bartlett χ²={_chi2:.1f}, p<0.001. "
-                            "Estructura factorial existente y estadísticamente significativa.", GREEN),
-            conclusion_item("✓", f"KMO = {_kmo:.3f} · {_kmo_label}",
-                            f"Adecuación muestral {_kmo_label.lower()} para ACP y AF. "
-                            "Correlaciones parciales bajas respecto a las totales.", _kmo_color),
-            conclusion_item("✓", f"{_n_kaiser} componente(s) por criterio Kaiser",
-                            f"CP1 explica {_var_exp[0]:.1f}% de la varianza. "
-                            f"Estructura casi unidimensional del gasto social departamental.", ACCENT),
-            conclusion_item("→", "Siguiente: ACP formal y Análisis Factorial",
-                            "Extracción de factores, rotación Varimax, "
-                            "interpretación de cargas y puntuaciones factoriales.", ORANGE),
-            conclusion_item("→", "Siguiente: Análisis de Clúster",
-                            "Clasificación de departamentos según perfiles de inversión. "
-                            "K-Means y jerárquico sobre componentes principales.", PURPLE),
-        ], style={"display": "grid", "gridTemplateColumns": "repeat(2,1fr)",
-                   "gap": "12px"}),
+            # Badge 1 — Factorizabilidad
+            html.Div([
+                html.P("FACTORIZABILIDAD", style={
+                    "color": TEXT2, "fontFamily": "IBM Plex Mono", "fontSize": "9px",
+                    "letterSpacing": "0.12em", "marginBottom": "6px",
+                }),
+                html.P(f"KMO = {_kmo:.3f} · {_kmo_label}",
+                       style={"color": _kmo_color, "fontFamily": "IBM Plex Mono",
+                              "fontSize": "12px", "fontWeight": "700", "margin": "0 0 4px"}),
+                html.P(f"Bartlett χ²={_chi2:.1f}  ·  p < 0.001  ·  R ≠ I confirmado",
+                       style={"color": GREEN, "fontFamily": "IBM Plex Mono",
+                              "fontSize": "11px", "margin": "0"}),
+            ], style={"background": SURFACE, "border": f"1px solid {GREEN}",
+                      "borderRadius": "8px", "padding": "16px 20px", "flex": "1"}),
+
+            # Badge 2 — Dimensionalidad
+            html.Div([
+                html.P("DIMENSIONALIDAD", style={
+                    "color": TEXT2, "fontFamily": "IBM Plex Mono", "fontSize": "9px",
+                    "letterSpacing": "0.12em", "marginBottom": "6px",
+                }),
+                html.P(f"{_n_kaiser} CP por criterio Kaiser  ·  {_var_acum[_n_kaiser-1]:.1f}% varianza",
+                       style={"color": ACCENT, "fontFamily": "IBM Plex Mono",
+                              "fontSize": "12px", "fontWeight": "700", "margin": "0 0 4px"}),
+                html.P(f"CP1 = {_var_exp[0]:.1f}%  ·  Factor general de inversión social",
+                       style={"color": TEXT2, "fontFamily": "IBM Plex Mono",
+                              "fontSize": "11px", "margin": "0"}),
+            ], style={"background": SURFACE, "border": f"1px solid {ACCENT}",
+                      "borderRadius": "8px", "padding": "16px 20px", "flex": "1"}),
+
+            # Badge 3 — Siguiente paso
+            html.Div([
+                html.P("SIGUIENTE PASO", style={
+                    "color": TEXT2, "fontFamily": "IBM Plex Mono", "fontSize": "9px",
+                    "letterSpacing": "0.12em", "marginBottom": "6px",
+                }),
+                html.P("ACP formal  ·  Análisis Factorial (Varimax)",
+                       style={"color": ORANGE, "fontFamily": "IBM Plex Mono",
+                              "fontSize": "12px", "fontWeight": "700", "margin": "0 0 4px"}),
+                html.P("Clúster jerárquico (Ward) + K-Means sobre CP",
+                       style={"color": TEXT2, "fontFamily": "IBM Plex Mono",
+                              "fontSize": "11px", "margin": "0"}),
+            ], style={"background": SURFACE, "border": f"1px solid {ORANGE}",
+                      "borderRadius": "8px", "padding": "16px 20px", "flex": "1"}),
+
+        ], style={"display": "flex", "gap": "12px", "flexWrap": "wrap"}),
     ], style={
         "background": SURFACE, "border": f"1px solid {GREEN}",
         "borderRadius": "10px", "padding": "28px 32px", "marginBottom": "32px",
@@ -1079,10 +1028,10 @@ def update_dist(sector):
     fig_h, fig_qq, fig_box, s = fig_distribucion(sector)
     return html.Div([
         html.Div([
-            mini_kpi("Media",      f"{s['media']:,.0f}",   "COP/hab",        ACCENT),
-            mini_kpi("Mediana",    f"{s['mediana']:,.0f}", "COP/hab",        GREEN),
+            mini_kpi("Media",      f"{s['media']:,.0f}",   "COP/hab",         ACCENT),
+            mini_kpi("Mediana",    f"{s['mediana']:,.0f}", "COP/hab",         GREEN),
             mini_kpi("CV",         f"{s['cv']:.1f}%",     "Coef. variación", ORANGE),
-            mini_kpi("Asimetría",  f"{s['asimetria']:.3f}","Skewness",       PURPLE),
+            mini_kpi("Asimetría",  f"{s['asimetria']:.3f}","Skewness",        PURPLE),
             html.Div([
                 html.P("Shapiro-Wilk", style={
                     "color": TEXT2, "fontFamily": "IBM Plex Mono", "fontSize": "9px",
