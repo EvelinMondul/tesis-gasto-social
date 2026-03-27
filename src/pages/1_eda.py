@@ -32,11 +32,11 @@ RED    = P["red"];    PURPLE  = P["purple"]
 PC_DISP  = [c for c in SECTORES_PC if c in df.columns]
 ABS_DISP = [c for c in SECTORES_ABS if c in df.columns]
 
+# BASE sin 'legend' para evitar conflictos en figuras que lo definen aparte
 BASE = dict(
     paper_bgcolor=CARD,
     plot_bgcolor=CARD,
     font=dict(family="IBM Plex Mono, monospace", color=TEXT1, size=11),
-    legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1),
 )
 
 DD_STYLE = {
@@ -207,6 +207,7 @@ def fig_cv():
                    color=TEXT2, tickfont=dict(color=TEXT1)),
         height=400, showlegend=False,
         margin=dict(l=60, r=120, t=60, b=80),
+        legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1),
     )
     return fig
 
@@ -235,11 +236,14 @@ def fig_barras_departamentos():
                    color=TEXT2, tickfont=dict(color=TEXT1)),
         yaxis=dict(gridcolor=BORDER, linecolor=BORDER,
                    color=TEXT2, tickfont=dict(color=TEXT1)),
-        legend=dict(orientation="h", y=1.02, x=0,
-                    bgcolor=CARD, bordercolor=BORDER, borderwidth=1,
-                    font=dict(color=TEXT1)),
         margin=dict(l=160, r=20, t=80, b=50),
     )
+    # legend en llamada separada para evitar conflicto con BASE
+    fig.update_layout(legend=dict(
+        orientation="h", y=1.02, x=0,
+        bgcolor=CARD, bordercolor=BORDER, borderwidth=1,
+        font=dict(color=TEXT1),
+    ))
     return fig
 
 
@@ -267,6 +271,7 @@ def fig_scatter_poblacion():
                    title="Gasto total per cápita (COP/hab)",
                    color=TEXT2, tickfont=dict(color=TEXT1)),
         height=480, margin=dict(l=80, r=20, t=60, b=60),
+        legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1),
     )
     return fig
 
@@ -308,6 +313,7 @@ def fig_distribucion(sector):
         yaxis=dict(gridcolor=BORDER, linecolor=BORDER,
                    title="Frecuencia", tickfont=dict(color=TEXT1)),
         height=340, margin=dict(l=60, r=20, t=50, b=60),
+        legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1),
     )
 
     (osm, osr), (slope, intercept, _) = stats.probplot(v)
@@ -396,6 +402,7 @@ def fig_correlacion():
         yaxis=dict(gridcolor=BORDER, linecolor=BORDER,
                    tickfont=dict(color=TEXT1)),
         height=500, margin=dict(l=140, r=20, t=60, b=140),
+        legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1),
     )
     return fig
 
@@ -413,6 +420,7 @@ def fig_scatter_matrix():
         title=dict(text="Scatter Matrix · Relaciones Bivariadas por Región",
                    font=dict(family="IBM Plex Sans", size=13, color=TEXT1)),
         height=540, margin=dict(l=60, r=20, t=60, b=60),
+        legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1),
     )
     return fig
 
@@ -453,6 +461,7 @@ def fig_outliers():
                    title="Z-score", tickfont=dict(color=TEXT1)),
         height=440, showlegend=False,
         margin=dict(l=70, r=20, t=60, b=100),
+        legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1),
     )
     return fig, Z
 
@@ -516,11 +525,13 @@ def fig_estandarizacion():
         title=dict(text="Efecto de la Estandarización Z-score",
                    font=dict(family="IBM Plex Sans", size=13, color=TEXT1)),
         height=460,
-        legend=dict(orientation="h", y=-0.18, x=0,
-                    bgcolor=CARD, bordercolor=BORDER, borderwidth=1,
-                    font=dict(color=TEXT1)),
         margin=dict(l=60, r=20, t=80, b=130),
     )
+    fig.update_layout(legend=dict(
+        orientation="h", y=-0.18, x=0,
+        bgcolor=CARD, bordercolor=BORDER, borderwidth=1,
+        font=dict(color=TEXT1),
+    ))
     fig.update_xaxes(tickangle=-30, gridcolor=BORDER, linecolor=BORDER,
                      tickfont=dict(color=TEXT1))
     fig.update_yaxes(gridcolor=BORDER, linecolor=BORDER,
@@ -602,6 +613,7 @@ def fig_scree():
                     showgrid=False, tickfont=dict(color=ORANGE),
                     titlefont=dict(color=ORANGE)),
         margin=dict(l=60, r=80, t=80, b=60),
+        legend=dict(bgcolor=CARD, bordercolor=BORDER, borderwidth=1),
     )
     fig.update_xaxes(gridcolor=BORDER, linecolor=BORDER, tickfont=dict(color=TEXT1))
     fig.update_yaxes(gridcolor=BORDER, linecolor=BORDER, tickfont=dict(color=TEXT1))
@@ -678,7 +690,7 @@ layout = html.Div([
     }),
 
     # ══════════════════════════════════════════════════════════════════════════
-    # ACTO 1 — DESCRIPCIÓN
+    # ACTO 1
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("01", "Descripción del Fenómeno",
                 "Estadísticos descriptivos · 7 variables per cápita · COP/hab · n = 33 departamentos"),
@@ -686,20 +698,20 @@ layout = html.Div([
         T("Tabla 1 · Estadísticos Descriptivos · Variables per cápita (COP/hab)",
           "CV en rojo = alta dispersión interdepartamental · Ordenable por columna"),
         narrative(
-            "CV > 60% en libre destinación e inversión: son los sectores con mayor heterogeneidad entre departamentos. "
+            "CV > 60% en libre destinación e inversión: sectores con mayor heterogeneidad entre departamentos. "
             "Media > mediana en todos los sectores confirma distribuciones asimétricas positivas."
         ),
         tabla_descriptivos(),
     ),
 
     # ══════════════════════════════════════════════════════════════════════════
-    # ACTO 2 — HETEROGENEIDAD TERRITORIAL
+    # ACTO 2
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("02", "Heterogeneidad Territorial",
                 "¿Cuán desigual es el gasto entre departamentos? · CV · Composición sectorial · Efecto escala"),
     card_wrap(
         T("Gráfico 1 · Coeficiente de Variación por Sector",
-          "Rojo > 60% · Naranja 40–60% · Azul < 40% · Umbrales de referencia en línea punteada"),
+          "Rojo > 60% · Naranja 40–60% · Azul < 40% · Umbrales en línea punteada"),
         narrative(
             "Sectores discrecionales (libre destinación, libre inversión) concentran la mayor heterogeneidad. "
             "Educación muestra baja variabilidad por efecto homogeneizador del SGP."
@@ -711,7 +723,7 @@ layout = html.Div([
           "Ordenado de menor a mayor gasto total · Cada color = un sector"),
         narrative(
             "Dos perfiles emergen: departamentos SGP-dependientes (educación + salud dominan) "
-            "vs. territorios con alta participación de libre inversión. Estos patrones serán formalizados en el clúster."
+            "vs. territorios con alta participación de libre inversión."
         ),
         dcc.Graph(figure=_fig_barras, config={"displayModeBar": False}),
     ),
@@ -719,14 +731,14 @@ layout = html.Div([
         T("Gráfico 3 · Relación Población–Gasto per cápita",
           "Eje X en escala logarítmica · Color = región geográfica"),
         narrative(
-            "Relación inversa población–gasto per cápita. Los departamentos amazónicos son outliers matemáticos, "
-            "no fiscales: baja densidad poblacional infla el indicador sin reflejar mayor capacidad de inversión."
+            "Relación inversa población–gasto per cápita. Departamentos amazónicos: outliers matemáticos, "
+            "no fiscales. Baja densidad poblacional infla el indicador sin reflejar mayor capacidad de inversión."
         ),
         dcc.Graph(figure=_fig_scatter_pob, config={"displayModeBar": False}),
     ),
 
     # ══════════════════════════════════════════════════════════════════════════
-    # ACTO 3 — DISTRIBUCIÓN UNIVARIADA
+    # ACTO 3
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("03", "Distribución Univariada",
                 "Histograma + KDE · Q-Q plot · Boxplot regional · Shapiro-Wilk · Selecciona una variable"),
@@ -751,7 +763,7 @@ layout = html.Div([
     ),
 
     # ══════════════════════════════════════════════════════════════════════════
-    # ACTO 4 — ESTRUCTURA DE CORRELACIÓN
+    # ACTO 4
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("04", "Estructura de Correlación",
                 "Correlación de Spearman · Scatter matrix · Identificación de factores latentes"),
@@ -771,7 +783,7 @@ layout = html.Div([
     ),
 
     # ══════════════════════════════════════════════════════════════════════════
-    # ACTO 5 — VALORES ATÍPICOS
+    # ACTO 5
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("05", "Detección de Valores Atípicos",
                 "Z-scores univariados · Distancia euclidiana multivariada · Casos influyentes para ACP"),
@@ -810,7 +822,7 @@ layout = html.Div([
     ),
 
     # ══════════════════════════════════════════════════════════════════════════
-    # ACTO 6 — ESTANDARIZACIÓN Y VALIDACIÓN
+    # ACTO 6
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("06", "Estandarización y Validación de Factorizabilidad",
                 "Z-score · KMO · Prueba de Bartlett · Condiciones necesarias para ACP y Análisis Factorial"),
@@ -908,7 +920,7 @@ layout = html.Div([
     ),
 
     # ══════════════════════════════════════════════════════════════════════════
-    # ACTO 7 — ESTRUCTURA PRELIMINAR
+    # ACTO 7
     # ══════════════════════════════════════════════════════════════════════════
     acto_header("07", "Estructura Multivariada Preliminar",
                 f"Scree plot · Kaiser (λ > 1) · {_n_kaiser} CP retener · "
@@ -919,11 +931,9 @@ layout = html.Div([
         narrative(
             f"CP1 explica {_var_exp[0]:.1f}% de la varianza: factor general de nivel de inversión social. "
             f"Criterio Kaiser retiene {_n_kaiser} componente(s) con {_var_acum[_n_kaiser-1]:.1f}% acumulado. "
-            f"Estructura casi unidimensional coherente con las altas correlaciones del Acto IV."
+            f"Estructura coherente con las altas correlaciones del Acto IV."
         ),
         dcc.Graph(figure=_fig_scree, config={"displayModeBar": False}),
-
-        # Tabla eigenvalores
         html.Div([
             html.Div([
                 html.P(f"CP{i+1}", style={
@@ -963,7 +973,6 @@ layout = html.Div([
                        "fontWeight": "700", "fontSize": "15px",
                        "margin": "10px 0 20px"}),
         html.Div([
-            # Badge 1 — Factorizabilidad
             html.Div([
                 html.P("FACTORIZABILIDAD", style={
                     "color": TEXT2, "fontFamily": "IBM Plex Mono", "fontSize": "9px",
@@ -977,8 +986,6 @@ layout = html.Div([
                               "fontSize": "11px", "margin": "0"}),
             ], style={"background": SURFACE, "border": f"1px solid {GREEN}",
                       "borderRadius": "8px", "padding": "16px 20px", "flex": "1"}),
-
-            # Badge 2 — Dimensionalidad
             html.Div([
                 html.P("DIMENSIONALIDAD", style={
                     "color": TEXT2, "fontFamily": "IBM Plex Mono", "fontSize": "9px",
@@ -992,8 +999,6 @@ layout = html.Div([
                               "fontSize": "11px", "margin": "0"}),
             ], style={"background": SURFACE, "border": f"1px solid {ACCENT}",
                       "borderRadius": "8px", "padding": "16px 20px", "flex": "1"}),
-
-            # Badge 3 — Siguiente paso
             html.Div([
                 html.P("SIGUIENTE PASO", style={
                     "color": TEXT2, "fontFamily": "IBM Plex Mono", "fontSize": "9px",
@@ -1007,7 +1012,6 @@ layout = html.Div([
                               "fontSize": "11px", "margin": "0"}),
             ], style={"background": SURFACE, "border": f"1px solid {ORANGE}",
                       "borderRadius": "8px", "padding": "16px 20px", "flex": "1"}),
-
         ], style={"display": "flex", "gap": "12px", "flexWrap": "wrap"}),
     ], style={
         "background": SURFACE, "border": f"1px solid {GREEN}",
