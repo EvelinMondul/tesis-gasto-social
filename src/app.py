@@ -11,73 +11,6 @@ app = dash.Dash(
         "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap",
     ],
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
-    index_string="""
-<!DOCTYPE html>
-<html>
-    <head>
-        {%metas%}
-        <title>{%title%}</title>
-        {%favicon%}
-        {%css%}
-        <style>
-            *, *::before, *::after {{ box-sizing: border-box; }}
-
-            html, body {{
-                background-color: #0D1117 !important;
-                margin: 0;
-                padding: 0;
-                min-height: 100vh;
-            }}
-
-            #react-entry-point,
-            #_dash-app-content,
-            ._dash-loading,
-            ._dash-loading-callback {{
-                background-color: #0D1117 !important;
-                min-height: 100vh;
-            }}
-
-            ._dash-loading-callback {{
-                background: rgba(13, 17, 23, 0.85) !important;
-            }}
-
-            .page-fade {{
-                animation: fadeIn 0.25s ease-in;
-            }}
-            @keyframes fadeIn {{
-                from {{ opacity: 0; transform: translateY(6px); }}
-                to   {{ opacity: 1; transform: translateY(0);   }}
-            }}
-
-            ::-webkit-scrollbar {{ width: 6px; height: 6px; }}
-            ::-webkit-scrollbar-track {{ background: #0D1117; }}
-            ::-webkit-scrollbar-thumb {{ background: #30363D; border-radius: 3px; }}
-            ::-webkit-scrollbar-thumb:hover {{ background: #58A6FF; }}
-
-            .Select-control,
-            .Select-menu-outer,
-            .Select-option,
-            .Select--single > .Select-control .Select-value,
-            .VirtualizedSelectOption {{
-                background-color: #161B22 !important;
-                color: #E6EDF3 !important;
-                border-color: #30363D !important;
-            }}
-            .Select-option.is-focused {{
-                background-color: #1C2333 !important;
-            }}
-        </style>
-    </head>
-    <body>
-        {%app_entry%}
-        <footer>
-            {%config%}
-            {%scripts%}
-            {%renderer%}
-        </footer>
-    </body>
-</html>
-""",
 )
 server = app.server
 
@@ -93,6 +26,7 @@ NAV_PAGES = [
     {"label": "01 · Introducción",    "href": "/"},
     {"label": "02 · EDA & Tablas",    "href": "/eda"},
     {"label": "03 · Visualizaciones", "href": "/graficas"},
+    {"label": "04 · Composicional",   "href": "/composicional"},
 ]
 
 navbar = html.Div([
