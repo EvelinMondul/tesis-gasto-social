@@ -392,3 +392,111 @@ PLOTLY_TEMPLATE = dict(
         ],
     )
 )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ANÁLISIS COMPOSICIONAL · Proporciones + CLR
+# Aitchison (1986) · Martín-Fernández et al. (2003)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Constante para reemplazo multiplicativo de ceros
+DELTA_CLR = 0.0001
+
+# Colores por sector (para gráficos composicionales)
+SECTOR_COLORS = {
+    "Agua Potable":      "#4A90D9",
+    "Educación":         "#2ECC71",
+    "Salud":             "#E74C3C",
+    "Cultura":           "#9B59B6",
+    "Deporte":           "#F39C12",
+    "Libre Destinación": "#1ABC9C",
+    "Libre Inversión":   "#E67E22",
+}
+
+# Colores por cluster
+CLUSTER_COLORS = {1: "#2E86AB", 2: "#E84855", 3: "#3BB273", 4: "#F4A261"}
+
+
+def cargar_proporciones():
+    """
+    Carga los datos y calcula las proporciones sectoriales del gasto total.
+    Devuelve df con columnas prop_<sector> para cada sector absoluto.
+    """
+    df = cargar_datos()
+    for s in SECTORES_ABS:
+        if s in df.columns and "total" in df.columns:
+            df[f"prop_{s}"] = df[s] / df["total"]
+    return df
+
+
+def calcular_clr(df):
+    """
+    Transformación CLR (centred log-ratio) sobre las proporciones.
+    Aplica reemplazo multiplicativo de ceros antes de log (Martín-Fernández 2003).
+
+    Parámetros
+    ----------
+    df : DataFrame con columnas prop_<sector>
+
+    Retorna
+    -------
+    X_clr  : np.ndarray (n, p) — datos transformados
+    prop_cols : list de nombres de columnas de proporciones
+    labels    : list de etiquetas legibles
+    """
+    prop_cols = [f"prop_{s}" for s in SECTORES_ABS if f"prop_{s}" in df.columns]
+    labels    = [SECTOR_LABELS.get(s, s) for s in SECTORES_ABS if f"prop_{s}" in df.columns]
+
+    X = df[prop_cols].values.copy().astype(float)
+
+    # Reemplazo multiplicativo de ceros (Bogotá: libre_destinacion = 0)
+    for i in range(len(X)):
+        zeros = X[i] == 0
+        n_zeros = zeros.sum()
+        if n_zeros > 0:
+            X[i, zeros]  = DELTA_CLR
+            X[i, ~zeros] = X[i, ~zeros] * (1 - n_zeros * DELTA_CLR)
+
+    # CLR: log(x_i) - mean(log(x_j))
+    X_clr = np.log(X) - np.log(X).mean(axis=1, keepdims=True)
+
+    return X_clr, prop_cols, labels
+
+
+def calcular_kmo_bartlett_prop(df):
+    """
+    KMO y prueba de Bartlett sobre un subconjunto de proporciones
+    no colineales (evita singularidad de la matriz CLR completa).
+
+    Retorna: kmo (float), chi2 (float), gl (int), pval (float)
+    """
+    from scipy import stats as _stats
+
+    # 4 proporciones con menor colinealidad
+    sel = ["prop_agua_potable", "prop_salud",
+           "prop_cultura", "prop_libre_destinacion"]
+    sel = [c for c in sel if c in df.columns]
+
+    from sklearn.preprocessing import StandardScaler as _SS
+    X   = _SS().fit_transform(df[sel].values)
+    R   = np.corrcoef(X.T)
+    Ri  = np.linalg.pinv(R)
+    n   = R.shape[0]
+    P   = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                d = np.sqrt(abs(Ri[i, i] * Ri[j, j]))
+                if d > 1e-10:
+                    P[i, j] = -Ri[i, j] / d
+    r2  = np.sum(R[np.triu_indices(n, k=1)] ** 2)
+    p2  = np.sum(P[np.triu_indices(n, k=1)] ** 2)
+    kmo = r2 / (r2 + p2)
+
+    no, p = X.shape
+    det   = np.linalg.det(R)
+    chi2  = -(no - 1 - (2*p + 5)/6) * np.log(det)
+    gl    = int(p * (p - 1) / 2)
+    pval  = 1 - _stats.chi2.cdf(chi2, gl)
+
+    return kmo, chi2, gl, pval
