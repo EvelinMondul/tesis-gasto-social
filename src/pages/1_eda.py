@@ -241,39 +241,40 @@ def fig_barras_prop():
             marker_color=colors[i],
             hovertemplate=f"<b>%{{y}}</b><br>{label}: %{{x:.1f}}%<extra></extra>",
         ))
-
+    
     fig.update_layout(
-        **BASE,
-        barmode="stack",
-        height=760,
-        title=dict(
-            text="Estructura de Priorización del Gasto · Proporciones por departamento (%)",
-            font=dict(family="IBM Plex Sans", size=13, color=TEXT1)
-        ),
-        xaxis=dict(
-            range=[0, 100],
-            title="% del gasto total",
-            gridcolor=BORDER,
-            linecolor=BORDER,
-            tickfont=dict(color=TEXT1),
-            ticksuffix="%"
-        ),
-        yaxis=dict(
-            gridcolor=BORDER,
-            linecolor=BORDER,
-            tickfont=dict(color=TEXT1)
-        ),
-        legend=dict(
-            orientation="h",
-            y=1.02,
-            x=0,
-            bgcolor=TARJETA,
-            bordercolor=BORDER,
-            borderwidth=1,
-            font=dict(color=TEXT1)
-        ),
-        margin=dict(l=160, r=20, t=80, b=50),
-    )
+    **BASE,
+    legend=LEGEND,
+    barmode="stack",
+    height=760,
+    title=dict(
+        text="Estructura de Priorización del Gasto · Proporciones por departamento (%)",
+        font=dict(family="IBM Plex Sans", size=13, color=TEXT1)
+    ),
+    xaxis=dict(
+        range=[0,100],
+        title="% del gasto total",
+        gridcolor=BORDER,
+        linecolor=BORDER,
+        tickfont=dict(color=TEXT1),
+        ticksuffix="%"
+    ),
+    yaxis=dict(
+        gridcolor=BORDER,
+        linecolor=BORDER,
+        tickfont=dict(color=TEXT1)
+    ),
+    legend=dict(
+        orientation="h",
+        y=1.02,
+        x=0,
+        bgcolor=CARD,   # ← corregido
+        bordercolor=BORDER,
+        borderwidth=1,
+        font=dict(color=TEXT1)
+    ),
+    margin=dict(l=160, r=20, t=80, b=50),
+)
 
     return fig
 
