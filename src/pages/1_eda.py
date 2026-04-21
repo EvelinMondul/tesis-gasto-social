@@ -244,7 +244,6 @@ def fig_barras_prop():
     
     fig.update_layout(
     **BASE,
-    legend=LEGEND,
     barmode="stack",
     height=760,
     title=dict(
@@ -268,7 +267,7 @@ def fig_barras_prop():
         orientation="h",
         y=1.02,
         x=0,
-        bgcolor=CARD,   # ← corregido
+        bgcolor=CARD,
         bordercolor=BORDER,
         borderwidth=1,
         font=dict(color=TEXT1)
