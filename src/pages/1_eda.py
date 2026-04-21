@@ -231,6 +231,7 @@ def fig_barras_prop():
     dfs = df.sort_values("prop_educacion", ascending=True)
     colors = list(SECTOR_COLORS.values())
     fig = go.Figure()
+
     for i, (s, label) in enumerate(zip(PROP_COLS, LABELS)):
         fig.add_trace(go.Bar(
             name=label,
@@ -240,19 +241,41 @@ def fig_barras_prop():
             marker_color=colors[i],
             hovertemplate=f"<b>%{{y}}</b><br>{label}: %{{x:.1f}}%<extra></extra>",
         ))
+
     fig.update_layout(
-        **BASE, legend=LEGEND, barmode="stack", height=760,
-        title=dict(text="Estructura de Priorización del Gasto · Proporciones por departamento (%)",
-                   font=dict(family="IBM Plex Sans", size=13, color=TEXT1)),
-        xaxis=dict(range=[0,100], title="% del gasto total", gridcolor=BORDER,
-                   linecolor=BORDER, tickfont=dict(color=TEXT1), ticksuffix="%"),
-        yaxis=dict(gridcolor=BORDER, linecolor=BORDER, tickfont=dict(color=TEXT1)),
-        legend=dict(orientation="h", y=1.02, x=0, bgcolor=CARD,
-                    bordercolor=BORDER, borderwidth=1, font=dict(color=TEXT1)),
+        **BASE,
+        barmode="stack",
+        height=760,
+        title=dict(
+            text="Estructura de Priorización del Gasto · Proporciones por departamento (%)",
+            font=dict(family="IBM Plex Sans", size=13, color=TEXT1)
+        ),
+        xaxis=dict(
+            range=[0, 100],
+            title="% del gasto total",
+            gridcolor=BORDER,
+            linecolor=BORDER,
+            tickfont=dict(color=TEXT1),
+            ticksuffix="%"
+        ),
+        yaxis=dict(
+            gridcolor=BORDER,
+            linecolor=BORDER,
+            tickfont=dict(color=TEXT1)
+        ),
+        legend=dict(
+            orientation="h",
+            y=1.02,
+            x=0,
+            bgcolor=TARJETA,
+            bordercolor=BORDER,
+            borderwidth=1,
+            font=dict(color=TEXT1)
+        ),
         margin=dict(l=160, r=20, t=80, b=50),
     )
-    return fig
 
+    return fig
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # FIGURAS — ETAPA 2: ANÁLISIS UNIVARIADO
