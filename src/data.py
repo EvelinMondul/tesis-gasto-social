@@ -248,86 +248,86 @@ REGION_COLORS = {
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# DESCRIPCIÓN DE VARIABLES
+# DESCRIPCIÓN DE VARIABLES (PROPORCIONES DEL GASTO)
 # ═══════════════════════════════════════════════════════════════════════════════
 VARIABLES_INFO = [
     {
-        "variable":    "agua_pc",
-        "etiqueta":    "Gasto en Agua Potable per cápita",
-        "unidad":      "COP / habitante",
-        "tipo":        "Continua · Razón",
+        "variable":    "prop_agua",
+        "etiqueta":    "Participación en Agua Potable",
+        "unidad":      "%",
+        "tipo":        "Continua · Razón (proporción)",
         "fuente":      "TerriData – DNP",
         "descripcion": (
-            "Inversión departamental destinada a acueducto, alcantarillado y saneamiento "
-            "básico dividida entre la población 2024. Refleja el esfuerzo territorial en "
-            "garantizar acceso al agua potable y condiciones sanitarias básicas."
+            "Proporción del gasto social departamental destinada a acueducto, "
+            "alcantarillado y saneamiento básico. Indica la prioridad relativa "
+            "asignada a garantizar acceso al agua potable dentro del presupuesto."
         ),
     },
     {
-        "variable":    "educacion_pc",
-        "etiqueta":    "Gasto en Educación per cápita",
-        "unidad":      "COP / habitante",
-        "tipo":        "Continua · Razón",
+        "variable":    "prop_educacion",
+        "etiqueta":    "Participación en Educación",
+        "unidad":      "%",
+        "tipo":        "Continua · Razón (proporción)",
         "fuente":      "TerriData – DNP",
         "descripcion": (
-            "Recursos destinados al sector educativo por habitante. Es el componente de "
-            "mayor peso dentro del gasto social departamental, determinado en gran medida "
-            "por las transferencias del SGP."
+            "Porcentaje del gasto social asignado al sector educativo. Es el componente "
+            "más representativo en la mayoría de los departamentos, influenciado por "
+            "las transferencias del Sistema General de Participaciones (SGP)."
         ),
     },
     {
-        "variable":    "salud_pc",
-        "etiqueta":    "Gasto en Salud per cápita",
-        "unidad":      "COP / habitante",
-        "tipo":        "Continua · Razón",
+        "variable":    "prop_salud",
+        "etiqueta":    "Participación en Salud",
+        "unidad":      "%",
+        "tipo":        "Continua · Razón (proporción)",
         "fuente":      "TerriData – DNP",
         "descripcion": (
-            "Inversión en aseguramiento, salud pública y prestación de servicios de salud "
-            "por habitante. Incluye recursos del SGP y recursos propios orientados al sector."
+            "Proporción del gasto social destinada al sector salud, incluyendo "
+            "aseguramiento, salud pública y prestación de servicios."
         ),
     },
     {
-        "variable":    "cultura_pc",
-        "etiqueta":    "Gasto en Cultura per cápita",
-        "unidad":      "COP / habitante",
-        "tipo":        "Continua · Razón",
+        "variable":    "prop_cultura",
+        "etiqueta":    "Participación en Cultura",
+        "unidad":      "%",
+        "tipo":        "Continua · Razón (proporción)",
         "fuente":      "TerriData – DNP",
         "descripcion": (
-            "Gasto destinado a la promoción de la cultura, patrimonio, bibliotecas y "
-            "actividades artísticas por habitante."
+            "Porcentaje del gasto asignado a cultura, patrimonio, bibliotecas y "
+            "actividades artísticas. Representa una prioridad social complementaria."
         ),
     },
     {
-        "variable":    "deporte_pc",
-        "etiqueta":    "Gasto en Deporte per cápita",
-        "unidad":      "COP / habitante",
-        "tipo":        "Continua · Razón",
+        "variable":    "prop_deporte",
+        "etiqueta":    "Participación en Deporte",
+        "unidad":      "%",
+        "tipo":        "Continua · Razón (proporción)",
         "fuente":      "TerriData – DNP",
         "descripcion": (
-            "Inversión en recreación, deporte comunitario e infraestructura deportiva "
-            "por habitante. Altamente correlacionado con el gasto en cultura."
+            "Proporción del gasto destinada a recreación, deporte comunitario e "
+            "infraestructura deportiva. Suele estar correlacionada con cultura."
         ),
     },
     {
-        "variable":    "libre_dest_pc",
-        "etiqueta":    "Libre Destinación per cápita",
-        "unidad":      "COP / habitante",
-        "tipo":        "Continua · Razón",
+        "variable":    "prop_libre_dest",
+        "etiqueta":    "Participación en Libre Destinación",
+        "unidad":      "%",
+        "tipo":        "Continua · Razón (proporción)",
         "fuente":      "TerriData – DNP",
         "descripcion": (
-            "Recursos de libre destinación por habitante. Proxy de capacidad fiscal "
-            "autónoma territorial."
+            "Porcentaje del gasto correspondiente a recursos de libre destinación. "
+            "Indica el margen de autonomía fiscal del departamento."
         ),
     },
     {
-        "variable":    "libre_inv_pc",
-        "etiqueta":    "Libre Inversión per cápita",
-        "unidad":      "COP / habitante",
-        "tipo":        "Continua · Razón",
+        "variable":    "prop_libre_inv",
+        "etiqueta":    "Participación en Libre Inversión",
+        "unidad":      "%",
+        "tipo":        "Continua · Razón (proporción)",
         "fuente":      "TerriData – DNP",
         "descripcion": (
-            "Recursos de libre inversión por habitante. Refleja la capacidad del "
-            "departamento para financiar proyectos fuera de los sectores obligatorios del SGP."
+            "Proporción del gasto destinada a libre inversión, reflejando la capacidad "
+            "de financiar proyectos fuera de los sectores obligatorios."
         ),
     },
     {
@@ -337,8 +337,8 @@ VARIABLES_INFO = [
         "tipo":        "Continua · Razón",
         "fuente":      "TerriData – DNP",
         "descripcion": (
-            "Suma de todos los componentes del gasto social departamental dividida entre "
-            "la población 2024. Variable síntesis del nivel global de inversión social."
+            "Nivel total de gasto social por habitante. Se mantiene como variable "
+            "complementaria para análisis comparativos de magnitud del gasto."
         ),
     },
     {
@@ -348,8 +348,8 @@ VARIABLES_INFO = [
         "tipo":        "Continua · Razón",
         "fuente":      "DANE – Proyecciones",
         "descripcion": (
-            "Proyección poblacional DANE para 2024. Denominador para el cálculo de "
-            "indicadores per cápita y variable de control en los análisis multivariados."
+            "Proyección poblacional utilizada como base para los cálculos per cápita "
+            "y como variable de control en los análisis estadísticos."
         ),
     },
 ]
