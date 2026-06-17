@@ -46,7 +46,7 @@ def _tabla(data, columns=None):
 
 def layout():
     df = load_gasto()
-    resumen_cluster, kw = ipm_por_cluster(df)
+    resumen_cluster, mw = ipm_por_cluster(df)
     privaciones = privaciones_por_cluster(df)
     corr = correlacion_gasto_ipm(df)
     ranking = ranking_ipm(df)
@@ -84,7 +84,7 @@ def layout():
             fig_ipm_por_cluster(df),
             caption=html.Span([
                 html.Strong("Figura 8.1. "),
-                "Distribución del IPM (%) en los clusters C1 y C3 de "
+                "Distribución del IPM (%) en los clusters C1 y C2 de "
                 "gasto social identificados en el Capítulo 07, y en "
                 "Bogotá D.C. (caso atípico, n=1).",
             ]),
@@ -92,12 +92,12 @@ def layout():
         ),
         _tabla(resumen_cluster.drop(columns="Descripción")),
         method_card(
-            "Prueba de Kruskal-Wallis (IPM por cluster)",
+            "Prueba de Mann-Whitney U (IPM por cluster)",
             (
-                f"H = {kw['H (Kruskal-Wallis)']}, valor p = {kw['Valor p']} "
-                f"({kw['Significativo (alpha=0.05)']} significativo al "
-                f"nivel α = 0.05). {kw['nota']} El cluster C1 (mayor margen "
-                "discrecional de gasto) y el cluster C3 (mayor peso del "
+                f"U = {mw['U (Mann-Whitney)']}, valor p = {mw['Valor p']} "
+                f"({mw['Significativo (alpha=0.05)']} significativo al "
+                f"nivel α = 0.05). {mw['nota']} El cluster C1 (mayor margen "
+                "discrecional de gasto) y el cluster C2 (mayor peso del "
                 "gasto en salud) presentan niveles de IPM medio similares "
                 "(18.3% y 14.2%, respectivamente), por lo que el patrón de "
                 "composición del gasto detectado en los Capítulos 05-07 no "
@@ -112,7 +112,7 @@ def layout():
             "La siguiente tabla muestra, para cada uno de los 15 "
             "indicadores de privación que componen el IPM, el porcentaje "
             "medio y mediano de personas que presentan dicha privación en "
-            "cada cluster de gasto (C1, C3 y el caso atípico, Bogotá D.C.)."
+            "cada cluster de gasto (C1, C2 y el caso atípico, Bogotá D.C.)."
         ),
         html.Div(
             _tabla(privaciones),
