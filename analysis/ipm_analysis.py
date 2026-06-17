@@ -10,7 +10,7 @@ cada departamento (Capítulo 08).
 from __future__ import annotations
 
 import pandas as pd
-from scipy.stats import kruskal, spearmanr
+from scipy.stats import mannwhitneyu, spearmanr
 
 from analysis.clustering import CLUSTER_LABELS, run_kmeans
 from analysis.coda import COMPONENTES, load_gasto, load_ipm
@@ -31,7 +31,7 @@ def gasto_ipm_clusters(df: pd.DataFrame | None = None) -> pd.DataFrame:
 
 
 def ipm_por_cluster(df: pd.DataFrame | None = None) -> tuple[pd.DataFrame, dict]:
-    """Estadísticos del IPM por cluster y test de Kruskal-Wallis."""
+    """Estadísticos del IPM por cluster y test de Mann-Whitney U."""
     datos = gasto_ipm_clusters(df)
 
     resumen = (
@@ -41,18 +41,18 @@ def ipm_por_cluster(df: pd.DataFrame | None = None) -> tuple[pd.DataFrame, dict]
         .reset_index()
     )
     resumen["Descripción"] = resumen["cluster"].map(CLUSTER_LABELS)
-    orden = {"C1": 0, "C3": 1, "Atípico": 2}
+    orden = {"C1": 0, "C2": 1, "Atípico": 2}
     resumen = resumen.sort_values(by="cluster", key=lambda s: s.map(orden)).reset_index(drop=True)
 
-    grupos = [datos.loc[datos["cluster"] == c, "IPM_pct"] for c in ["C1", "C3"]]
-    # Kruskal-Wallis requiere al menos 2 observaciones por grupo (Atípico = Bogotá, n=1)
-    grupos_validos = [g for g in grupos if len(g) >= 2]
-    if len(grupos_validos) >= 2:
-        h_stat, p_val = kruskal(*grupos_validos)
+    grupos = [datos.loc[datos["cluster"] == c, "IPM_pct"] for c in ["C1", "C2"]]
+    # Mann-Whitney U requiere al menos 1 observación por grupo (Atípico = Bogotá, n=1, se excluye)
+    grupos_validos = [g for g in grupos if len(g) >= 1]
+    if len(grupos_validos) == 2:
+        u_stat, p_val = mannwhitneyu(*grupos_validos, alternative="two-sided")
     else:
-        h_stat, p_val = float("nan"), float("nan")
+        u_stat, p_val = float("nan"), float("nan")
 
-    test = {"H (Kruskal-Wallis)": round(h_stat, 3) if h_stat == h_stat else None,
+    test = {"U (Mann-Whitney)": round(u_stat, 3) if u_stat == u_stat else None,
             "Valor p": round(p_val, 4) if p_val == p_val else None,
             "Significativo (alpha=0.05)": "Sí" if (p_val == p_val and p_val < 0.05) else "No",
             "nota": "Atípico (Bogotá, n=1) se excluye del test por tener un solo dato."}
@@ -72,7 +72,7 @@ INDICADORES_IPM = [
 def privaciones_por_cluster(df: pd.DataFrame | None = None) -> pd.DataFrame:
     """Media y mediana de los 15 indicadores de privación del IPM (% de
     personas que presentan cada privación), agrupados por cluster de gasto
-    (C1, C3, Atípico)."""
+    (C1, C2, Atípico)."""
     gasto = df if df is not None else load_gasto()
     ipm = load_ipm()
     res = run_kmeans(gasto)
@@ -80,7 +80,7 @@ def privaciones_por_cluster(df: pd.DataFrame | None = None) -> pd.DataFrame:
 
     datos = clusters.merge(ipm[["Departamento"] + INDICADORES_IPM], on="Departamento")
 
-    orden = {"C1": 0, "C3": 1, "Atípico": 2}
+    orden = {"C1": 0, "C2": 1, "Atípico": 2}
     filas = []
     for indicador in INDICADORES_IPM:
         fila = {"Privación (IPM)": indicador}
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     resumen, test = ipm_por_cluster()
     print("IPM por cluster:")
     print(resumen)
-    print("\nKruskal-Wallis:", test)
+    print("\nMann-Whitney U:", test)
     print("\nCorrelación gasto-IPM:")
     print(correlacion_gasto_ipm())
     print("\nRanking IPM (top 5):")
