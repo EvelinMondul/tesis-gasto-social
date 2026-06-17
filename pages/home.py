@@ -88,7 +88,7 @@ def layout():
             dbc.Col(kpi_card("33", "Departamentos / distritos analizados", variant=1), md=3, className="mb-3"),
             dbc.Col(kpi_card("6", "Componentes del gasto social (D)", variant=2), md=3, className="mb-3"),
             dbc.Col(kpi_card("2024", "Año fiscal de referencia", variant=3), md=3, className="mb-3"),
-            dbc.Col(kpi_card("C1 / C3 + Atípico", "Perfiles de gasto (Bogotá D.C. como caso atípico)", variant=4), md=3, className="mb-3"),
+            dbc.Col(kpi_card("C1 / C2 + Atípico", "Perfiles de gasto (Bogotá D.C. como caso atípico)", variant=4), md=3, className="mb-3"),
         ], className="mb-3"),
 
         section_title("Resumen del enfoque metodológico"),
@@ -116,9 +116,9 @@ def layout():
             "para reducir la dimensionalidad del problema. Sobre las "
             "puntuaciones factoriales de 32 departamentos se aplica un "
             "agrupamiento K-Means (Capítulo 7) que revela dos perfiles de "
-            "gasto social (C1 y C3); Bogotá D.C. se excluye del K-Means y "
+            "gasto social (C1 y C2); Bogotá D.C. se excluye del K-Means y "
             "se presenta como caso atípico. Los tres grupos resultantes "
-            "(C1, C3 y Atípico) se contrastan con el Índice de Pobreza "
+            "(C1, C2 y Atípico) se contrastan con el Índice de Pobreza "
             "Multidimensional (Capítulo 8) y se visualizan territorialmente "
             "(Capítulo 9).",
         ]),

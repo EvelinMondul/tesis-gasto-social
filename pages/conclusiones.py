@@ -28,7 +28,7 @@ def layout():
         dbc.Row([
             dbc.Col(kpi_card("33", "Departamentos analizados"), md=3, className="mb-3"),
             dbc.Col(kpi_card("6 → 2", "Componentes del gasto reducidos a 2 factores (AFE)"), md=3, className="mb-3"),
-            dbc.Col(kpi_card("2 + 1", "Clusters C1/C3 (K-Means) y Bogotá D.C. como caso atípico"), md=3, className="mb-3"),
+            dbc.Col(kpi_card("2 + 1", "Clusters C1/C2 (K-Means) y Bogotá D.C. como caso atípico"), md=3, className="mb-3"),
             dbc.Col(kpi_card("-0.64", "rho Educación vs. IPM (p < 0.001)"), md=3, className="mb-3"),
         ], className="mb-3"),
 
@@ -90,16 +90,16 @@ def layout():
             "departamentos). Sobre los 32 departamentos restantes, "
             "K-Means (k=2, silueta = 0.4765) identifica dos perfiles de "
             "gasto: C1 (21 departamentos, mayor margen discrecional "
-            "—Libre Destinación y Libre Inversión—) y C3 (11 "
+            "—Libre Destinación y Libre Inversión—) y C2 (11 "
             "departamentos, mayor peso del gasto en Salud y menor margen "
-            "discrecional). Las diferencias entre C1 y C3 son "
+            "discrecional). Las diferencias entre C1 y C2 son "
             "estadísticamente significativas (p < 0.05) en Libre "
             "Inversión, Libre Destinación y Cultura y Deporte.",
         ]),
         section_text([
             html.B("Capítulo 08 (Contraste con el IPM). "),
             "El IPM (%) no difiere significativamente entre los clusters "
-            "de gasto (Kruskal-Wallis, H = 0.266, p = 0.606): pertenecer a "
+            "de gasto (Mann-Whitney U, p = 0.606): pertenecer a "
             "un perfil de gasto discrecional u orientado a Salud no se "
             "asocia, por sí solo, con un IPM distinto. Sin embargo, la "
             "proporción específica de gasto en Educación sí está "
@@ -128,7 +128,7 @@ def layout():
                 "las correlaciones espurias propias de la restricción de "
                 "suma constante. Los resultados muestran que el ",
                 html.B("perfil agregado de gasto"),
-                " (los clusters C1/C3, basados principalmente en el "
+                " (los clusters C1/C2, basados principalmente en el "
                 "margen de gasto discrecional, con Bogotá D.C. como caso "
                 "atípico excluido del clustering) ", html.B("no presenta una "
                 "asociación estadísticamente significativa con el IPM"),
@@ -152,8 +152,8 @@ def layout():
             "2024 / IPM 2025), por lo que no permite establecer relaciones "
             "causales ni dinámicas temporales entre la composición del "
             "gasto y la pobreza multidimensional. El tamaño muestral (n = "
-            "33) limita la potencia estadística de las pruebas de "
-            "Kruskal-Wallis, en particular para Bogotá D.C. (caso atípico, "
+            "33) limita la potencia estadística de la prueba de "
+            "Mann-Whitney U, en particular para Bogotá D.C. (caso atípico, "
             "n = 1), que debió excluirse tanto del K-Means como de las "
             "comparaciones entre grupos. "
             "Adicionalmente, la agregación departamental oculta la "
@@ -193,7 +193,7 @@ def layout():
             "regression); y (iv) explorar métodos de clustering "
             "composicional (p. ej. sobre coordenadas CLR directamente, sin "
             "pasar por ACP/AFE) para validar la robustez de los "
-            "perfiles C1/C3 y del tratamiento de Bogotá D.C. como caso "
+            "perfiles C1/C2 y del tratamiento de Bogotá D.C. como caso "
             "atípico identificados en el Capítulo 07.",
         ]),
     ])

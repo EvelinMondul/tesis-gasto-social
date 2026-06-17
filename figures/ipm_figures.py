@@ -17,7 +17,7 @@ def fig_ipm_por_cluster(df=None):
     datos = gasto_ipm_clusters(df)
 
     fig = go.Figure()
-    for cluster in ["C1", "C3", "Atípico"]:
+    for cluster in ["C1", "C2", "Atípico"]:
         sub = datos[datos["cluster"] == cluster]
         fig.add_trace(go.Box(
             y=sub["IPM_pct"],
@@ -79,7 +79,7 @@ def fig_ranking_ipm(df=None):
     ranking = ranking_ipm(df).sort_values("IPM_pct", ascending=True)
 
     fig = go.Figure()
-    for cluster in ["C1", "C3", "Atípico"]:
+    for cluster in ["C1", "C2", "Atípico"]:
         sub = ranking[ranking["cluster"] == cluster]
         fig.add_trace(go.Bar(
             x=sub["IPM_pct"],
