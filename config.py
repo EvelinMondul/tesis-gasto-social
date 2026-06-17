@@ -59,7 +59,7 @@ ESCALA_DIVERGENTE = [
 # Colores fijos por cluster (Capítulo 7), reutilizados en mapas e IPM
 COLOR_CLUSTER = {
     "C1": COLORS["petroleo"],       # Mayor margen discrecional
-    "C3": COLORS["gris_medio"],     # Menor margen discrecional
+    "C2": COLORS["gris_medio"],     # Menor margen discrecional
     "Atípico": COLORS["azul_oscuro"],  # Bogotá D.C. (caso atípico)
 }
 
