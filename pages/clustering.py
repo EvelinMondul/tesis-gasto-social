@@ -5,14 +5,14 @@ pages/clustering.py
 Capítulo 07: Clustering. Segmentación de los 32 departamentos (excluyendo
 Bogotá D.C., tratada como caso atípico) mediante K-Means (k=2) sobre las
 puntuaciones CP1-CP2 del ACP, y caracterización de los grupos resultantes
-mediante el test de Kruskal-Wallis.
+mediante el test de Mann-Whitney U.
 """
 
 import dash
 import dash_bootstrap_components as dbc
 from dash import dash_table, html
 
-from analysis.clustering import CLUSTER_LABELS, kruskal_clusters, perfil_clusters, run_kmeans
+from analysis.clustering import CLUSTER_LABELS, mannwhitney_clusters, perfil_clusters, run_kmeans
 from analysis.coda import load_gasto
 from components.elements import figure_block, kpi_card, method_card, page_header, section_title, section_text
 from figures.clustering_figures import fig_clusters_cp1_cp2, fig_perfil_clusters
@@ -50,7 +50,7 @@ def layout():
     df = load_gasto()
     res = run_kmeans(df)
     perfil = perfil_clusters(df)
-    kw = kruskal_clusters(df)
+    mw = mannwhitney_clusters(df)
 
     tab_metodo = html.Div([
         section_title("Método: K-Means sobre CP1-CP2"),
@@ -115,19 +115,20 @@ def layout():
         ),
     ], className="pt-3")
 
-    tab_kruskal = html.Div([
-        section_title("Diferencias entre clusters: prueba de Kruskal-Wallis"),
+    tab_mw = html.Div([
+        section_title("Diferencias entre clusters: prueba de Mann-Whitney U"),
         section_text(
             "Para cada componente del gasto se aplica el test no "
-            "paramétrico de Kruskal-Wallis, que evalúa si su distribución "
-            "porcentual difiere entre los clusters C1 y C3 (H₀: las "
+            "paramétrico de Mann-Whitney U, específico para contrastar "
+            "dos grupos independientes, que evalúa si su distribución "
+            "porcentual difiere entre los clusters C1 y C2 (H₀: las "
             "distribuciones son iguales en ambos grupos). Bogotá D.C. "
             "(caso atípico, n=1) se excluye de este test."
         ),
         _tabla(
-            kw.to_dict("records"),
-            [{"name": c, "id": c} for c in kw.columns],
-            "tabla-clust-kruskal",
+            mw.to_dict("records"),
+            [{"name": c, "id": c} for c in mw.columns],
+            "tabla-clust-mw",
             style_data_conditional=[{
                 "if": {"filter_query": '{Significativo (alpha=0.05)} = "Sí"'},
                 "backgroundColor": "var(--color-bg-subtle)",
@@ -145,7 +146,7 @@ def layout():
                 "que distingue a los dos grupos. El cluster C1 (21 "
                 "departamentos) destina, en promedio, una proporción "
                 "mayor a Libre Destinación y Libre Inversión; el cluster "
-                "C3 (11 departamentos) destina una proporción mayor a "
+                "C2 (11 departamentos) destina una proporción mayor a "
                 "Salud y menor a las categorías discrecionales. Bogotá "
                 "D.C., excluida del K-Means por ser un caso atípico, "
                 "presenta Libre Destinación nula y la mayor proporción de "
@@ -169,6 +170,6 @@ def layout():
         dbc.Tabs([
             dbc.Tab(tab_metodo, label="Método y segmentación CP1-CP2", tab_id="tab-clust-metodo"),
             dbc.Tab(tab_perfil, label="Perfil por cluster", tab_id="tab-clust-perfil"),
-            dbc.Tab(tab_kruskal, label="Kruskal-Wallis", tab_id="tab-clust-kruskal"),
+            dbc.Tab(tab_mw, label="Mann-Whitney U", tab_id="tab-clust-mw"),
         ], id="tabs-clustering", active_tab="tab-clust-metodo"),
     ])

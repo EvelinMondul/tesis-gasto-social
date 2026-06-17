@@ -4,7 +4,7 @@ analysis/clustering.py
 
 Segmentación de los departamentos mediante K-Means sobre las
 puntuaciones CP1-CP2 del ACP (Capítulo 05), y caracterización de los
-grupos resultantes mediante el test no paramétrico de Kruskal-Wallis
+grupos resultantes mediante el test no paramétrico de Mann-Whitney U
 sobre la composición porcentual de cada componente del gasto.
 
 Bogotá D.C. se trata como un caso atípico (institucionalmente, un
@@ -16,15 +16,21 @@ con k=2 sobre esas 32 observaciones, seleccionado mediante el
 coeficiente de silueta (silueta(k=2) > silueta(k=3)). Los dos clusters
 resultantes se etiquetan de forma determinista: C1 es el de mayor
 proporción promedio de gasto de libre destinación e inversión (mayor
-margen discrecional) y C3 el de menor margen discrecional / mayor peso
+margen discrecional) y C2 el de menor margen discrecional / mayor peso
 relativo del gasto en salud. Bogotá se reporta aparte con la etiqueta
 "Atípico".
+
+Las diferencias entre C1 y C2 en cada componente del gasto se evalúan
+mediante la prueba de Mann-Whitney U, la prueba no paramétrica
+específica para contrastar dos grupos independientes (equivalente
+asintótico de Kruskal-Wallis cuando k=2, pero con cálculo exacto del
+estadístico U en lugar de la aproximación chi-cuadrado).
 """
 
 from __future__ import annotations
 
 import pandas as pd
-from scipy.stats import kruskal
+from scipy.stats import mannwhitneyu
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
@@ -35,7 +41,7 @@ DEPARTAMENTO_ATIPICO = "Bogotá"
 
 CLUSTER_LABELS = {
     "C1": "Mayor margen discrecional (Libre Destinación / Inversión)",
-    "C3": "Menor margen discrecional, mayor peso del gasto en Salud",
+    "C2": "Menor margen discrecional, mayor peso del gasto en Salud",
     "Atípico": "Bogotá D.C. (excluida del K-Means, caso atípico)",
 }
 
@@ -83,7 +89,7 @@ def run_kmeans(df: pd.DataFrame | None = None, k: int = 2, random_state: int = 4
     discrecional = medias["P_Libre Destinación"] + medias["P_Libre Inversión"]
     mas_discrecional = discrecional.idxmax()
     menos_discrecional = [c for c in medias.index if c != mas_discrecional][0]
-    mapeo = {mas_discrecional: "C1", menos_discrecional: "C3"}
+    mapeo = {mas_discrecional: "C1", menos_discrecional: "C2"}
 
     scores["cluster"] = "Atípico"
     scores.loc[~es_atipico, "cluster"] = raw_series.map(mapeo).values
@@ -94,7 +100,7 @@ def run_kmeans(df: pd.DataFrame | None = None, k: int = 2, random_state: int = 4
 
     centers_raw = pd.DataFrame(km.cluster_centers_, columns=["CP1", "CP2"])
     centers_raw.index = centers_raw.index.map(mapeo)
-    centers = centers_raw.loc[["C1", "C3"]].reset_index().rename(columns={"index": "cluster"})
+    centers = centers_raw.loc[["C1", "C2"]].reset_index().rename(columns={"index": "cluster"})
 
     sil = silhouette_score(X, raw_labels)
 
@@ -109,7 +115,7 @@ def run_kmeans(df: pd.DataFrame | None = None, k: int = 2, random_state: int = 4
 
 def perfil_clusters(df: pd.DataFrame | None = None) -> pd.DataFrame:
     """Composición promedio (%) de cada componente del gasto por cluster
-    (C1, C3), junto con la fila correspondiente a Bogotá D.C. (Atípico,
+    (C1, C2), junto con la fila correspondiente a Bogotá D.C. (Atípico,
     n=1, con su composición real)."""
     res = run_kmeans(df)
     gasto_aux = res["gasto"]
@@ -121,26 +127,27 @@ def perfil_clusters(df: pd.DataFrame | None = None) -> pd.DataFrame:
     perfil = perfil.reset_index()
     perfil["Descripción"] = perfil["cluster"].map(CLUSTER_LABELS)
 
-    orden = {"C1": 0, "C3": 1, "Atípico": 2}
+    orden = {"C1": 0, "C2": 1, "Atípico": 2}
     perfil["_orden"] = perfil["cluster"].map(orden)
     return perfil.sort_values("_orden").drop(columns="_orden").reset_index(drop=True)
 
 
-def kruskal_clusters(df: pd.DataFrame | None = None) -> pd.DataFrame:
-    """Test de Kruskal-Wallis: ¿difiere la composición porcentual de cada
-    componente del gasto entre los clusters C1 y C3? (Bogotá, caso
-    atípico con n=1, se excluye del test)."""
+def mannwhitney_clusters(df: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Test de Mann-Whitney U: ¿difiere la composición porcentual de cada
+    componente del gasto entre los clusters C1 y C2? (Bogotá, caso
+    atípico con n=1, se excluye del test porque la prueba requiere al
+    menos una observación por grupo en ambos lados de la comparación)."""
     res = run_kmeans(df)
     gasto_aux = res["gasto"]
 
     filas = []
     for comp in COMPONENTES:
         g1 = gasto_aux.loc[gasto_aux["cluster"] == "C1", f"P_{comp}"]
-        g3 = gasto_aux.loc[gasto_aux["cluster"] == "C3", f"P_{comp}"]
-        h_stat, p_val = kruskal(g1, g3)
+        g2 = gasto_aux.loc[gasto_aux["cluster"] == "C2", f"P_{comp}"]
+        u_stat, p_val = mannwhitneyu(g1, g2, alternative="two-sided")
         filas.append({
             "Componente": comp,
-            "H (Kruskal-Wallis)": round(h_stat, 3),
+            "U (Mann-Whitney)": round(u_stat, 3),
             "Valor p": round(p_val, 4),
             "Significativo (alpha=0.05)": "Sí" if p_val < 0.05 else "No",
         })
@@ -153,4 +160,4 @@ if __name__ == "__main__":
     print()
     print(perfil_clusters())
     print()
-    print(kruskal_clusters())
+    print(mannwhitney_clusters())
