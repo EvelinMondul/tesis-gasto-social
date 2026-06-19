@@ -60,8 +60,9 @@ def fig_heatmap_spearman(df=None):
         hovertemplate="%{y} vs %{x}<br>rho=%{z:.3f}<extra></extra>",
     ))
     fig.update_layout(
-        title=dict(text="Matriz de correlación de Spearman sobre coordenadas CLR"),
-        height=520,
-        yaxis=dict(autorange="reversed"),
+    title=dict(text="Matriz de correlación de Spearman sobre coordenadas CLR"),
+    height=520,
+    yaxis=dict(autorange="reversed"),
+    margin=dict(l=130, r=20, t=70, b=60),
     )
     return fig
