@@ -52,6 +52,11 @@ def layout():
         columns={"region": "Región"}
     )
 
+    # Tabla de cargas: solo CP1 y CP2
+    loadings_tabla = res["loadings"][["CP1", "CP2"]].reset_index().rename(
+        columns={"index": "Componente CLR"}
+    ).round(4)
+
     tab_adecuacion = html.Div([
         section_title("Adecuación muestral: KMO y prueba de Bartlett"),
         section_text([
@@ -83,8 +88,7 @@ def layout():
             "coordenadas CLR es suficiente para justificar un ACP. El test "
             "de Bartlett rechaza con holgura la hipótesis nula de que la "
             "matriz de correlación es la identidad (p < 0.001), confirmando "
-            "que las variables están suficientemente correlacionadas entre "
-            "sí.",
+            "que las variables están suficientemente correlacionadas entre sí.",
         ),
     ], className="pt-3")
 
@@ -125,6 +129,15 @@ def layout():
             ]),
             fig_id="fig-pca-loadings",
         ),
+
+        section_title("Tabla de cargas factoriales"),
+        section_text(
+            "Valores numéricos de las cargas de cada coordenada CLR "
+            "sobre los dos componentes retenidos. Valores absolutos "
+            "mayores a 0.40 se consideran cargas sustantivas."
+        ),
+        _tabla(loadings_tabla, "tabla-pca-loadings"),
+
     ], className="pt-3")
 
     tab_biplot = html.Div([
@@ -153,8 +166,8 @@ def layout():
             [
                 "CP1 está dominado por la oposición entre ",
                 html.B("Libre Destinación"), " (carga positiva) y el resto "
-                "de componentes —especialmente ", html.B("Educación"),
-                " y ", html.B("Agua potable"), "— (cargas negativas), y "
+                "de componentes, especialmente ", html.B("Educación"),
+                " y ", html.B("Agua potable"), " (cargas negativas), y "
                 "separa claramente a Bogotá D.C. del resto de "
                 "departamentos. CP2 contrasta ", html.B("Libre Inversión"),
                 " y ", html.B("Cultura y Deporte"), " (cargas positivas) "
