@@ -45,8 +45,8 @@ def fig_clusters_cp1_cp2(df=None):
         textposition="top center",
         textfont=dict(size=8, color=COLORS["texto_secundario"]),
     )
-    fig.add_hline(y=0, line_color=COLORS["border"], line_width=1)
-    fig.add_vline(x=0, line_color=COLORS["border"], line_width=1)
+    fig.add_hline(y=0, line_color="gray", line_width=1.2, line_dash="dash")
+    fig.add_vline(x=0, line_color="gray", line_width=1.2, line_dash="dash")
     fig.update_layout(
         title=dict(text="Segmentación K-Means (k=2) sobre CP1-CP2 · 32 departamentos"),
         xaxis_title="CP1 — Autonomía fiscal (52.8% varianza)",
