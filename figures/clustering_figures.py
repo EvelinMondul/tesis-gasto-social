@@ -22,9 +22,9 @@ def fig_clusters_cp1_cp2(df=None):
 
     # Etiquetas descriptivas para la leyenda
     labels_map = {
-        "C1": "C1 — Mayor margen discrecional (n=21)",
-        "C2": "C2 — Menor margen discrecional (n=11)",
-    }
+     "C1": "C1 — Alta autonomía fiscal (n=21)",
+     "C2": "C2 — Alta dependencia SGP (n=11)",
+     }
     scores_sin_bogota["Grupo"] = scores_sin_bogota["cluster"].map(labels_map)
 
     fig = px.scatter(
